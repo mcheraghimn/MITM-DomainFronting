@@ -5,15 +5,16 @@
     "donate2": "USDT (TRC20): TU5gKvKqcXPn8itp1DouBCwcqGHMemBm8o"
   },
 
-
-  "remarks": "MITM-DomainFronting_v7",
+  "remarks": "MITM-DomainFronting_v7 + GSMArena",
 
   "version": {
     "min": "26.2.6"
   },
 
   "log": {
-    "loglevel": "warning", "dnsLog": false, "access": "none"
+    "loglevel": "warning",
+    "dnsLog": false,
+    "access": "none"
   },
 
   "policy": {
@@ -25,17 +26,18 @@
     }
   },
 
-  "dns":{
+  "dns": {
     "hosts": {
       "geosite:category-ads-all": "#3",
       "google-main-services.redirect": "216.239.38.120",
-	  "vercel-sites.redirect": "react.dev",
-	  "fastly.redirect": "www.python.org",
-	  "amazon-cloudfront.redirect": "kubernetes.io"
+      "vercel-sites.redirect": "react.dev",
+      "fastly.redirect": "www.python.org",
+      "amazon-cloudfront.redirect": "kubernetes.io",
+      "gsmarena.redirect": "148.251.96.211"
     },
     "servers": [
       "fakedns",
-	  "localhost"
+      "localhost"
     ],
     "queryStrategy": "UseSystem",
     "useSystemHosts": true,
@@ -63,7 +65,7 @@
         }
       }
     },
-	{
+    {
       "port": 11666,
       "tag": "tls-decrypt-h11",
       "protocol": "tunnel",
@@ -98,7 +100,7 @@
       "streamSettings": {
         "security": "tls",
         "tlsSettings": {
-          "alpn": ["h2","http/1.1"],
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "usage": "issue",
@@ -116,7 +118,7 @@
       "tag": "block",
       "protocol": "block"
     },
-	{
+    {
       "tag": "direct",
       "protocol": "direct",
       "streamSettings": {
@@ -130,18 +132,18 @@
           }
         }
       }
-	},
+    },
     {
       "tag": "dns-out",
       "protocol": "dns",
-      "settings": {"nonIPQuery": "reject", "blockTypes": [0, 65]}
+      "settings": { "nonIPQuery": "reject", "blockTypes": [0, 65] }
     },
-	{
+    {
       "tag": "redirect-out-h11",
       "protocol": "direct",
       "settings": {
         "redirect": "127.0.0.1:11666",
-		"ipsBlocked": []
+        "ipsBlocked": []
       }
     },
     {
@@ -149,10 +151,10 @@
       "protocol": "direct",
       "settings": {
         "redirect": "127.0.0.1:11777",
-		"ipsBlocked": []
+        "ipsBlocked": []
       }
     },
-	{
+    {
       "tag": "tls-repack-googlevideo",
       "protocol": "direct",
       "streamSettings": {
@@ -163,7 +165,7 @@
           "alpn": ["fromMitM"],
           "fingerprint": "chrome"
         },
-		"sockopt": {
+        "sockopt": {
           "domainStrategy": "ForceIP",
           "happyEyeballs": {
             "tryDelayMs": 300,
@@ -188,7 +190,7 @@
           "alpn": ["fromMitM"],
           "fingerprint": "chrome"
         },
-		"sockopt": {
+        "sockopt": {
           "domainStrategy": "ForceIP",
           "happyEyeballs": {
             "tryDelayMs": 300,
@@ -199,7 +201,7 @@
         }
       }
     },
-	{
+    {
       "tag": "tls-repack-vercel-sites",
       "protocol": "direct",
       "settings": {
@@ -213,7 +215,7 @@
           "alpn": ["fromMitM"],
           "fingerprint": "chrome"
         },
-		"sockopt": {
+        "sockopt": {
           "domainStrategy": "ForceIP",
           "happyEyeballs": {
             "tryDelayMs": 300,
@@ -224,7 +226,7 @@
         }
       }
     },
-	{
+    {
       "tag": "tls-repack-fastly",
       "protocol": "direct",
       "settings": {
@@ -238,7 +240,7 @@
           "alpn": ["fromMitM"],
           "fingerprint": "chrome"
         },
-		"sockopt": {
+        "sockopt": {
           "domainStrategy": "ForceIP",
           "happyEyeballs": {
             "tryDelayMs": 300,
@@ -249,7 +251,7 @@
         }
       }
     },
-	{
+    {
       "tag": "tls-repack-amazon-cloudfront",
       "protocol": "direct",
       "settings": {
@@ -263,7 +265,32 @@
           "alpn": ["fromMitM"],
           "fingerprint": "chrome"
         },
-		"sockopt": {
+        "sockopt": {
+          "domainStrategy": "ForceIP",
+          "happyEyeballs": {
+            "tryDelayMs": 300,
+            "prioritizeIPv6": false,
+            "interleave": 2,
+            "maxConcurrentTry": 20
+          }
+        }
+      }
+    },
+    {
+      "tag": "tls-repack-gsmarena",
+      "protocol": "direct",
+      "settings": {
+        "redirect": "gsmarena.redirect:443"
+      },
+      "streamSettings": {
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.python.org",
+          "verifyPeerCertByName": "fromMitM,www.python.org,gsmarena.com,www.gsmarena.com,cdn.gsmarena.com",
+          "alpn": ["fromMitM"],
+          "fingerprint": "chrome"
+        },
+        "sockopt": {
           "domainStrategy": "ForceIP",
           "happyEyeballs": {
             "tryDelayMs": 300,
@@ -280,55 +307,61 @@
     "domainStrategy": "IPOnDemand",
     "rules": [
       {
-	   "outboundTag": "block",
-       "domain": ["geosite:category-ads-all"]
+        "outboundTag": "block",
+        "domain": ["geosite:category-ads-all"]
       },
       {
-	   "outboundTag": "direct",
-       "inboundTag": ["dns_inbound"], "port": 53
+        "outboundTag": "direct",
+        "inboundTag": ["dns_inbound"],
+        "port": 53
       },
       {
-	   "outboundTag": "dns-out",
-       "port": 53
+        "outboundTag": "dns-out",
+        "port": 53
       },
       {
-	   "outboundTag": "direct",
-       "domain": ["domain:ir", "geosite:private", "geosite:category-ir", "geosite:khanacademy"]
+        "outboundTag": "direct",
+        "domain": ["domain:ir", "geosite:private", "geosite:category-ir", "geosite:khanacademy"]
       },
       {
-	   "outboundTag": "tls-repack-googlevideo",
-       "domain": ["domain:googlevideo.com"],
-       "inboundTag": ["tls-decrypt-h11"]
-	  },
+        "outboundTag": "tls-repack-googlevideo",
+        "domain": ["domain:googlevideo.com"],
+        "inboundTag": ["tls-decrypt-h11"]
+      },
       {
-	   "outboundTag": "tls-repack-google-main-services",
-       "domain": ["geosite:google"],
-       "inboundTag": ["tls-decrypt-h211"]
-	  },
-	  {
-	   "outboundTag": "tls-repack-vercel-sites",
-       "domain": ["geosite:vercel"],
-       "inboundTag": ["tls-decrypt-h211"]
-	  },
-	  {
-	   "outboundTag": "tls-repack-fastly",
-       "domain": ["geosite:fastly", "geosite:reddit", "domain:githubassets.com", "domain:githubusercontent.com", "geosite:cnn", "domain:buzzfeed.com"],
-       "inboundTag": ["tls-decrypt-h211"]
-	  },
-	  {
-	   "outboundTag": "tls-repack-amazon-cloudfront",
-       "domain": ["geosite:netlify"],
-       "inboundTag": ["tls-decrypt-h211"]
-	  },
-	  {
-	   "outboundTag": "tls-repack-fastly",
-       "ip": ["geoip:fastly"],
-       "inboundTag": ["tls-decrypt-h211"]
-	  },
+        "outboundTag": "tls-repack-google-main-services",
+        "domain": ["geosite:google"],
+        "inboundTag": ["tls-decrypt-h211"]
+      },
       {
-	   "outboundTag": "block",
-       "inboundTag": ["tls-decrypt-h211", "tls-decrypt-h11"]
-	  },
+        "outboundTag": "tls-repack-vercel-sites",
+        "domain": ["geosite:vercel"],
+        "inboundTag": ["tls-decrypt-h211"]
+      },
+      {
+        "outboundTag": "tls-repack-fastly",
+        "domain": ["geosite:fastly", "geosite:reddit", "domain:githubassets.com", "domain:githubusercontent.com", "geosite:cnn", "domain:buzzfeed.com"],
+        "inboundTag": ["tls-decrypt-h211"]
+      },
+      {
+        "outboundTag": "tls-repack-amazon-cloudfront",
+        "domain": ["geosite:netlify"],
+        "inboundTag": ["tls-decrypt-h211"]
+      },
+      {
+        "outboundTag": "tls-repack-fastly",
+        "ip": ["geoip:fastly"],
+        "inboundTag": ["tls-decrypt-h211"]
+      },
+      {
+        "outboundTag": "tls-repack-gsmarena",
+        "domain": ["domain:gsmarena.com", "domain:www.gsmarena.com", "domain:cdn.gsmarena.com"],
+        "inboundTag": ["tls-decrypt-h211"]
+      },
+      {
+        "outboundTag": "block",
+        "inboundTag": ["tls-decrypt-h211", "tls-decrypt-h11"]
+      },
       {
         "outboundTag": "redirect-out-h11",
         "network": "tcp",
@@ -339,21 +372,21 @@
         "outboundTag": "redirect-out-h211",
         "network": "tcp",
         "port": 443,
-        "domain": ["geosite:google", "geosite:vercel", "geosite:fastly", "geosite:reddit", "domain:githubassets.com", "domain:githubusercontent.com", "geosite:netlify", "geosite:cnn", "domain:buzzfeed.com"]
+        "domain": ["geosite:google", "geosite:vercel", "geosite:fastly", "geosite:reddit", "domain:githubassets.com", "domain:githubusercontent.com", "geosite:netlify", "geosite:cnn", "domain:buzzfeed.com", "domain:gsmarena.com", "domain:www.gsmarena.com", "domain:cdn.gsmarena.com"]
       },
       {
-	   "outboundTag": "direct",
-       "ip": ["geoip:private", "geoip:ir"]
+        "outboundTag": "direct",
+        "ip": ["geoip:private", "geoip:ir"]
       },
-	  {
+      {
         "outboundTag": "redirect-out-h211",
         "network": "tcp",
         "port": 443,
         "ip": ["geoip:fastly"]
       },
       {
-	   "outboundTag": "direct",
-       "port": "0-65535"
+        "outboundTag": "direct",
+        "port": "0-65535"
       }
     ]
   }
